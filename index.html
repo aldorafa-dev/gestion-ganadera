@@ -1,62 +1,112 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Gestión Ganadera</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2e7d32">
-  <style>
-    body { font-family: Arial; padding: 15px; }
-    input, select, button { width: 100%; margin: 5px 0; padding: 8px; }
-    .item { border: 1px solid #ccc; padding: 8px; margin-top: 8px; }
-  </style>
+<meta charset="UTF-8">
+<title>Gestión Ganadera</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2e7d32">
+<style>
+body { font-family: Arial; padding: 15px; }
+h2 { margin-top: 25px; }
+input, select, button {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+}
+.box {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 10px;
+}
+</style>
 </head>
+<body>
+
+<h2>Establecimiento</h2>
+<input id="estNombre" placeholder="Nombre del establecimiento">
+<button onclick="addEst()">Agregar establecimiento</button>
+
+<select id="estSelect" onchange="cargarLotes()"></select>
+
+<h2>Lotes</h2>
+<input id="loteNombre" placeholder="Nombre del lote">
+<button onclick="addLote()">Agregar lote</button>
+
+<select id="loteSelect" onchange="cargarRodeos()"></select>
+
+<h2>Rodeos</h2>
+<input id="rodeoNombre" placeholder="Nombre del rodeo">
+<button onclick="addRodeo()">Agregar rodeo</button>
+
+<select id="rodeoSelect"></select>
+
+<script>
+let data = JSON.parse(localStorage.getItem("ganaderia")) || {
+  establecimientos: []
+};
+
+function save() {
+  localStorage.setItem("ganaderia", JSON.stringify(data));
+}
+
+function addEst() {
+  data.establecimientos.push({ nombre: estNombre.value, lotes: [] });
+  estNombre.value = "";
+  save(); renderEst();
+}
+
+function renderEst() {
+  estSelect.innerHTML = "<option value=''>Seleccionar</option>";
+  data.establecimientos.forEach((e, i) => {
+    estSelect.innerHTML += `<option value="${i}">${e.nombre}</option>`;
+  });
+}
+renderEst();
+
+function cargarLotes() {
+  loteSelect.innerHTML = "";
+  rodeoSelect.innerHTML = "";
+  let e = data.establecimientos[estSelect.value];
+  if (!e) return;
+  e.lotes.forEach((l, i) => {
+    loteSelect.innerHTML += `<option value="${i}">${l.nombre}</option>`;
+  });
+}
+
+function addLote() {
+  let e = data.establecimientos[estSelect.value];
+  if (!e) return alert("Seleccioná un establecimiento");
+  e.lotes.push({ nombre: loteNombre.value, rodeos: [] });
+  loteNombre.value = "";
+  save(); cargarLotes();
+}
+
+function cargarRodeos() {
+  rodeoSelect.innerHTML = "";
+  let e = data.establecimientos[estSelect.value];
+  if (!e) return;
+  let l = e.lotes[loteSelect.value];
+  if (!l) return;
+  l.rodeos.forEach((r, i) => {
+    rodeoSelect.innerHTML += `<option value="${i}">${r.nombre}</option>`;
+  });
+}
+
+function addRodeo() {
+  let e = data.establecimientos[estSelect.value];
+  if (!e) return;
+  let l = e.lotes[loteSelect.value];
+  if (!l) return alert("Seleccioná un lote");
+  l.rodeos.push({ nombre: rodeoNombre.value, animales: [] });
+  rodeoNombre.value = "";
+  save(); cargarRodeos();
+}
+</script>
+
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
-</script>
-  <body>
-
-<h2>Animales</h2>
-
-<input id="id" placeholder="Identificación">
-<select id="categoria">
-  <option>Vaca</option>
-  <option>Vaquillona</option>
-  <option>Ternero</option>
-</select>
-<input id="sexo" placeholder="Sexo">
-<input id="color" placeholder="Color">
-
-<button onclick="guardar()">Guardar animal</button>
-
-<div id="lista"></div>
-
-<script>
-let animales = JSON.parse(localStorage.getItem("animales")) || [];
-
-function guardar() {
-  animales.push({
-    id: id.value,
-    categoria: categoria.value,
-    sexo: sexo.value,
-    color: color.value
-  });
-  localStorage.setItem("animales", JSON.stringify(animales));
-  mostrar();
-}
-
-function mostrar() {
-  lista.innerHTML = "";
-  animales.forEach(a => {
-    lista.innerHTML += `<div class="item">
-      <b>${a.id}</b><br>
-      ${a.categoria} - ${a.sexo} - ${a.color}
-    </div>`;
-  });
-}
-mostrar();
 </script>
 
 </body>
