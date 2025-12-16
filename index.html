@@ -2,126 +2,116 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Gestión Ganadera</title>
+<title>Livestock Monitoring</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root {
-  --verde: #1b5e20;
-  --verde-sec: #2e7d32;
-  --fondo: #f2f4f6;
-  --card: #ffffff;
-  --texto: #263238;
-  --gris: #90a4ae;
+:root{
+  --verde:#2f6f4e;
+  --verde-claro:#e6f2ec;
+  --gris:#f3f5f7;
+  --card:#ffffff;
+  --texto:#1f2933;
 }
 
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  background: var(--fondo);
-  color: var(--texto);
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto;
+  background:var(--gris);
+  color:var(--texto);
 }
 
-header {
-  background: var(--verde);
-  color: white;
-  padding: 16px;
-  font-size: 20px;
-  font-weight: 600;
+header{
+  background:var(--verde);
+  color:white;
+  padding:14px 18px;
+  font-size:18px;
+  font-weight:600;
 }
 
-main {
-  padding: 16px;
+.container{
+  padding:15px;
 }
 
-.section {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 18px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+.card{
+  background:var(--card);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:15px;
+  box-shadow:0 6px 16px rgba(0,0,0,.06);
 }
 
-.section h2 {
-  margin: 0 0 12px 0;
-  font-size: 18px;
-  color: var(--verde-sec);
+input, select, button{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+  font-size:15px;
 }
 
-input, select {
-  width: 100%;
-  padding: 12px;
-  margin: 6px 0;
-  border-radius: 10px;
-  border: 1px solid #cfd8dc;
-  font-size: 15px;
+button{
+  background:var(--verde);
+  color:white;
+  border:none;
+  font-weight:600;
 }
 
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  border-radius: 12px;
-  border: none;
-  background: var(--verde-sec);
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
+.layout{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:15px;
 }
 
-button:active {
-  transform: scale(0.98);
+@media(min-width:900px){
+  .layout{
+    grid-template-columns:2fr 1fr;
+  }
 }
 
-.card {
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 10px;
-  margin-top: 8px;
+.animal{
+  padding:10px;
+  border-bottom:1px solid #eee;
 }
 
-.card strong {
-  font-size: 15px;
+.animal:last-child{
+  border-bottom:none;
 }
 
-.meta {
-  font-size: 13px;
-  color: var(--gris);
+.small{
+  font-size:13px;
+  color:#666;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  📡 Livestock Monitoring
-</header>
+<header>Livestock Monitoring</header>
 
-<main>
+<div class="container">
 
-<div class="section">
-  <h2>Establecimiento</h2>
-  <input id="estNombre" placeholder="Nombre del establecimiento">
-  <button onclick="addEst()">Agregar</button>
-  <select id="estSel" onchange="loadLotes()"></select>
+<!-- ESTABLECIMIENTO -->
+<div class="card" id="estCard"></div>
+
+<div class="layout">
+
+<!-- PANEL IZQUIERDO -->
+<div class="card">
+  <h3>Rodeo</h3>
+
+  <select id="rodeoSel" onchange="mostrarRodeo()"></select>
+
+  <div id="infoRodeo" class="small"></div>
+
+  <h4>Animales</h4>
+  <div id="listaAnimales"></div>
 </div>
 
-<div class="section">
-  <h2>Lote</h2>
-  <input id="loteNombre" placeholder="Nombre del lote">
-  <button onclick="addLote()">Agregar</button>
-  <select id="loteSel" onchange="loadRodeos()"></select>
-</div>
+<!-- PANEL DERECHO -->
+<div class="card">
+  <h3>Alta de animal</h3>
 
-<div class="section">
-  <h2>Rodeo</h2>
-  <input id="rodeoNombre" placeholder="Nombre del rodeo">
-  <button onclick="addRodeo()">Agregar</button>
-  <select id="rodeoSel" onchange="showAnimales()"></select>
-</div>
-
-<div class="section">
-  <h2>Animal</h2>
   <input id="aniId" placeholder="Identificación">
   <select id="aniCat">
     <option>Vaca</option>
@@ -132,90 +122,100 @@ button:active {
   <input id="aniColor" placeholder="Color">
   <input id="aniMadre" placeholder="Hijo de (ID madre)">
   <select id="aniServ">
-    <option value="">Servicio natural</option>
+    <option value="natural">Servicio natural</option>
     <option value="iatf">IATF</option>
   </select>
   <input type="date" id="aniFecha">
-  <button onclick="addAnimal()">Registrar animal</button>
+
+  <button onclick="agregarAnimal()">Agregar</button>
 </div>
 
-<div class="section">
-  <h2>Monitoreo del rodeo</h2>
-  <div id="lista"></div>
 </div>
-
-</main>
+</div>
 
 <script>
-let data = JSON.parse(localStorage.getItem("ganaderia")) || { establecimientos: [] };
-const save = () => localStorage.setItem("ganaderia", JSON.stringify(data));
+let data = JSON.parse(localStorage.getItem("ganaderia")) || {
+  establecimiento: "",
+  rodeos: []
+};
 
-function addEst(){
-  if(!estNombre.value) return;
-  data.establecimientos.push({ nombre: estNombre.value, lotes: [] });
-  estNombre.value=""; save(); renderEst();
+function save(){
+  localStorage.setItem("ganaderia", JSON.stringify(data));
 }
 
+/* ESTABLECIMIENTO */
 function renderEst(){
-  estSel.innerHTML="<option value=''>Seleccionar establecimiento</option>";
-  data.establecimientos.forEach((e,i)=>estSel.innerHTML+=`<option value="${i}">${e.nombre}</option>`);
-}
-renderEst();
-
-function addLote(){
-  let e=data.establecimientos[estSel.value];
-  if(!e || !loteNombre.value) return;
-  e.lotes.push({ nombre:loteNombre.value, rodeos:[] });
-  loteNombre.value=""; save(); loadLotes();
-}
-
-function loadLotes(){
-  loteSel.innerHTML="<option value=''>Seleccionar lote</option>";
-  rodeoSel.innerHTML=""; lista.innerHTML="";
-  let e=data.establecimientos[estSel.value]; if(!e) return;
-  e.lotes.forEach((l,i)=>loteSel.innerHTML+=`<option value="${i}">${l.nombre}</option>`);
+  if(data.establecimiento){
+    estCard.innerHTML = `<b>Establecimiento:</b> ${data.establecimiento}`;
+  }else{
+    estCard.innerHTML = `
+      <h3>Establecimiento</h3>
+      <input id="estNombre" placeholder="Nombre del establecimiento">
+      <button onclick="setEst()">Confirmar</button>
+    `;
+  }
 }
 
-function addRodeo(){
-  let l=data.establecimientos[estSel.value]?.lotes[loteSel.value];
-  if(!l || !rodeoNombre.value) return;
-  l.rodeos.push({ nombre:rodeoNombre.value, animales:[] });
-  rodeoNombre.value=""; save(); loadRodeos();
+function setEst(){
+  data.establecimiento = estNombre.value;
+  save();
+  renderEst();
 }
 
-function loadRodeos(){
-  rodeoSel.innerHTML="<option value=''>Seleccionar rodeo</option>";
-  lista.innerHTML="";
-  let l=data.establecimientos[estSel.value]?.lotes[loteSel.value]; if(!l) return;
-  l.rodeos.forEach((r,i)=>rodeoSel.innerHTML+=`<option value="${i}">${r.nombre}</option>`);
-}
+/* RODEOS */
+function cargarRodeos(){
+  if(data.rodeos.length === 0){
+    data.rodeos.push({
+      nombre:"Rodeo General",
+      lote:"Lote 1",
+      animales:[]
+    });
+    save();
+  }
 
-function addAnimal(){
-  let r=data.establecimientos[estSel.value]?.lotes[loteSel.value]?.rodeos[rodeoSel.value];
-  if(!r) return;
-  r.animales.push({
-    id:aniId.value, cat:aniCat.value, sexo:aniSexo.value,
-    color:aniColor.value, madre:aniMadre.value,
-    fecha:aniFecha.value, servicio: aniServ.value || "natural"
+  rodeoSel.innerHTML="";
+  data.rodeos.forEach((r,i)=>{
+    rodeoSel.innerHTML+=`<option value="${i}">${r.nombre}</option>`;
   });
-  aniId.value=aniMadre.value=aniFecha.value="";
-  save(); showAnimales();
 }
 
-function showAnimales(){
-  lista.innerHTML="";
-  let r=data.establecimientos[estSel.value]?.lotes[loteSel.value]?.rodeos[rodeoSel.value];
-  if(!r) return;
+function mostrarRodeo(){
+  let r = data.rodeos[rodeoSel.value];
+  infoRodeo.innerHTML = `Lote: ${r.lote} · Animales: ${r.animales.length}`;
+  listaAnimales.innerHTML="";
   r.animales.forEach(a=>{
-    lista.innerHTML+=`
-      <div class="card">
-        <strong>${a.id}</strong> — ${a.cat}<br>
-        <span class="meta">${a.sexo} · ${a.color}</span><br>
-        <span class="meta">Madre: ${a.madre || "-"}</span><br>
-        <span class="meta">${a.servicio==="iatf"?"IATF":"Servicio natural"}</span>
-      </div>`;
+    listaAnimales.innerHTML+=`
+      <div class="animal">
+        <b>${a.id}</b> (${a.cat})<br>
+        ${a.sexo} · ${a.color}<br>
+        <span class="small">
+          Madre: ${a.madre || "-"} · ${a.servicio}
+        </span>
+      </div>
+    `;
   });
 }
+
+/* ANIMALES */
+function agregarAnimal(){
+  let r = data.rodeos[rodeoSel.value];
+  r.animales.push({
+    id:aniId.value,
+    cat:aniCat.value,
+    sexo:aniSexo.value,
+    color:aniColor.value,
+    madre:aniMadre.value,
+    servicio:aniServ.value,
+    fecha:aniFecha.value
+  });
+  aniId.value=""; aniMadre.value=""; aniFecha.value="";
+  save();
+  mostrarRodeo();
+}
+
+renderEst();
+cargarRodeos();
+mostrarRodeo();
 </script>
 
 </body>
