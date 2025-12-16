@@ -7,25 +7,37 @@
 <style>
 body { font-family: Arial; padding: 15px; }
 h2 { margin-top: 20px; }
-input, button, select {
+input, select, button {
   width: 100%;
   padding: 10px;
   margin: 5px 0;
 }
-.box {
-  border: 1px solid #999;
+.item {
+  border: 1px solid #444;
   padding: 10px;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 </style>
 </head>
 <body>
 
 <h2>Establecimientos</h2>
-<input id="estNombre" placeholder="Nombre del establecimiento">
+
+<input id="nombreEst" placeholder="Nombre del establecimiento">
 <button onclick="agregarEst()">Agregar establecimiento</button>
 
-<div id="estLista"></div>
+<select id="estSelect" onchange="mostrarLotes()">
+  <option value="">-- Seleccione establecimiento --</option>
+</select>
+
+<div id="listaEst"></div>
+
+<h2>Lotes</h2>
+
+<input id="nombreLote" placeholder="Nombre del lote">
+<button onclick="agregarLote()">Agregar lote</button>
+
+<div id="listaLotes"></div>
 
 <script>
 let data = JSON.parse(localStorage.getItem("ganaderia")) || {
@@ -37,29 +49,47 @@ function guardar() {
 }
 
 function agregarEst() {
-  if (!estNombre.value) return alert("Escribí un nombre");
+  if (!nombreEst.value) return alert("Escribí un nombre");
   data.establecimientos.push({
-    nombre: estNombre.value,
+    nombre: nombreEst.value,
     lotes: []
   });
-  estNombre.value = "";
+  nombreEst.value = "";
   guardar();
-  mostrarEst();
+  cargarEst();
 }
 
-function mostrarEst() {
-  estLista.innerHTML = "";
+function cargarEst() {
+  estSelect.innerHTML = "<option value=''>-- Seleccione establecimiento --</option>";
   data.establecimientos.forEach((e, i) => {
-    estLista.innerHTML += `
-      <div class="box">
-        <b>${e.nombre}</b><br>
-        Lotes: ${e.lotes.length}
-      </div>
-    `;
+    estSelect.innerHTML += `<option value="${i}">${e.nombre}</option>`;
+  });
+  listaEst.innerHTML = "";
+  data.establecimientos.forEach(e => {
+    listaEst.innerHTML += `<div class="item"><b>${e.nombre}</b></div>`;
   });
 }
 
-mostrarEst();
+function agregarLote() {
+  let est = data.establecimientos[estSelect.value];
+  if (!est) return alert("Seleccioná un establecimiento");
+  if (!nombreLote.value) return alert("Escribí un nombre");
+  est.lotes.push({ nombre: nombreLote.value, rodeos: [] });
+  nombreLote.value = "";
+  guardar();
+  mostrarLotes();
+}
+
+function mostrarLotes() {
+  listaLotes.innerHTML = "";
+  let est = data.establecimientos[estSelect.value];
+  if (!est) return;
+  est.lotes.forEach(l => {
+    listaLotes.innerHTML += `<div class="item">${l.nombre}</div>`;
+  });
+}
+
+cargarEst();
 </script>
 
 </body>
