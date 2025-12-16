@@ -4,137 +4,232 @@
 <meta charset="UTF-8">
 <title>Gestión Ganadera</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-body { font-family: Arial; padding: 15px; }
-h2 { margin-top: 20px; }
-input, select, button {
+:root {
+  --verde: #2e7d32;
+  --verde-claro: #e8f5e9;
+  --gris: #f4f6f8;
+  --texto: #333;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+  background: var(--gris);
+  color: var(--texto);
+  margin: 0;
+  padding: 15px;
+}
+
+h2 {
+  margin: 0 0 10px 0;
+  color: var(--verde);
+}
+
+input, select {
   width: 100%;
-  padding: 10px;
-  margin: 5px 0;
+  padding: 12px;
+  margin: 6px 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
-.box {
-  border: 1px solid #444;
-  padding: 10px;
+
+button {
+  width: 100%;
+  padding: 12px;
   margin-top: 8px;
+  border-radius: 12px;
+  border: none;
+  background: var(--verde);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
 }
-.small { font-size: 14px; color: #555; }
+
+button:active {
+  transform: scale(0.98);
+}
+
+.section {
+  background: white;
+  border-radius: 16px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.small {
+  font-size: 13px;
+  color: #666;
+}
 </style>
 </head>
+
 <body>
 
-<h2>Establecimiento</h2>
-<input id="estNombre" placeholder="Nombre del establecimiento">
-<button onclick="addEst()">Agregar establecimiento</button>
-<select id="estSel" onchange="loadLotes()"></select>
+<div class="section">
+  <h2>Establecimiento</h2>
+  <input id="estNombre" placeholder="Nombre del establecimiento">
+  <button onclick="addEst()">Agregar establecimiento</button>
+  <select id="estSel" onchange="loadLotes()"></select>
+</div>
 
-<h2>Lote</h2>
-<input id="loteNombre" placeholder="Nombre del lote">
-<button onclick="addLote()">Agregar lote</button>
-<select id="loteSel" onchange="loadRodeos()"></select>
+<div class="section">
+  <h2>Lote</h2>
+  <input id="loteNombre" placeholder="Nombre del lote">
+  <button onclick="addLote()">Agregar lote</button>
+  <select id="loteSel" onchange="loadRodeos()"></select>
+</div>
 
-<h2>Rodeo</h2>
-<input id="rodeoNombre" placeholder="Nombre del rodeo">
-<button onclick="addRodeo()">Agregar rodeo</button>
-<select id="rodeoSel" onchange="showAnimales()"></select>
+<div class="section">
+  <h2>Rodeo</h2>
+  <input id="rodeoNombre" placeholder="Nombre del rodeo">
+  <button onclick="addRodeo()">Agregar rodeo</button>
+  <select id="rodeoSel" onchange="showAnimales()"></select>
+</div>
 
-<h2>Animal</h2>
-<input id="aniId" placeholder="Identificación">
-<select id="aniCat">
-  <option>Vaca</option>
-  <option>Vaquillona</option>
-  <option>Ternero</option>
-</select>
-<input id="aniSexo" placeholder="Sexo">
-<input id="aniColor" placeholder="Color">
-<input id="aniMadre" placeholder="Hijo de (ID madre)">
-<select id="aniServ">
-  <option value="">Servicio natural</option>
-  <option value="iatf">IATF</option>
-</select>
-<input type="date" id="aniFecha">
-<button onclick="addAnimal()">Agregar animal</button>
+<div class="section">
+  <h2>Animal</h2>
+  <input id="aniId" placeholder="Identificación">
+  <select id="aniCat">
+    <option>Vaca</option>
+    <option>Vaquillona</option>
+    <option>Ternero</option>
+  </select>
+  <input id="aniSexo" placeholder="Sexo">
+  <input id="aniColor" placeholder="Color">
+  <input id="aniMadre" placeholder="Hijo de (ID madre)">
+  <select id="aniServ">
+    <option value="">Servicio natural</option>
+    <option value="iatf">IATF</option>
+  </select>
+  <input type="date" id="aniFecha">
+  <button onclick="addAnimal()">Agregar animal</button>
+</div>
 
-<h2>Listado</h2>
-<div id="lista"></div>
+<div class="section">
+  <h2>Animales registrados</h2>
+  <div id="lista"></div>
+</div>
 
 <script>
 let data = JSON.parse(localStorage.getItem("ganaderia")) || {
   establecimientos: []
 };
 
-function save(){ localStorage.setItem("ganaderia", JSON.stringify(data)); }
+function save() {
+  localStorage.setItem("ganaderia", JSON.stringify(data));
+}
 
-function addEst(){
-  if(!estNombre.value) return alert("Nombre?");
+/* ESTABLECIMIENTOS */
+function addEst() {
+  if (!estNombre.value) return alert("Ingresá un nombre");
   data.establecimientos.push({ nombre: estNombre.value, lotes: [] });
-  estNombre.value="";
-  save(); renderEst();
+  estNombre.value = "";
+  save();
+  renderEst();
 }
-function renderEst(){
-  estSel.innerHTML="<option value=''>Seleccionar</option>";
-  data.establecimientos.forEach((e,i)=>{
-    estSel.innerHTML+=`<option value="${i}">${e.nombre}</option>`;
-  });
-}
-function loadLotes(){
-  loteSel.innerHTML=""; rodeoSel.innerHTML=""; lista.innerHTML="";
-  let e=data.establecimientos[estSel.value]; if(!e) return;
-  e.lotes.forEach((l,i)=>loteSel.innerHTML+=`<option value="${i}">${l.nombre}</option>`);
-}
-function addLote(){
-  let e=data.establecimientos[estSel.value];
-  if(!e) return alert("Elegí establecimiento");
-  e.lotes.push({ nombre:loteNombre.value, rodeos:[] });
-  loteNombre.value="";
-  save(); loadLotes();
-}
-function loadRodeos(){
-  rodeoSel.innerHTML=""; lista.innerHTML="";
-  let l=data.establecimientos[estSel.value]?.lotes[loteSel.value];
-  if(!l) return;
-  l.rodeos.forEach((r,i)=>rodeoSel.innerHTML+=`<option value="${i}">${r.nombre}</option>`);
-}
-function addRodeo(){
-  let l=data.establecimientos[estSel.value]?.lotes[loteSel.value];
-  if(!l) return alert("Elegí lote");
-  l.rodeos.push({ nombre:rodeoNombre.value, animales:[] });
-  rodeoNombre.value="";
-  save(); loadRodeos();
-}
-function addAnimal(){
-  let r=data.establecimientos[estSel.value]?.lotes[loteSel.value]?.rodeos[rodeoSel.value];
-  if(!r) return alert("Elegí rodeo");
-  r.animales.push({
-    id:aniId.value,
-    cat:aniCat.value,
-    sexo:aniSexo.value,
-    color:aniColor.value,
-    madre:aniMadre.value,
-    fecha:aniFecha.value,
-    servicio: aniServ.value || "natural"
-  });
-  aniId.value=""; aniMadre.value=""; aniFecha.value="";
-  save(); showAnimales();
-}
-function showAnimales(){
-  lista.innerHTML="";
-  let r=data.establecimientos[estSel.value]?.lotes[loteSel.value]?.rodeos[rodeoSel.value];
-  if(!r) return;
-  r.animales.forEach(a=>{
-    let origen = "Servicio natural";
-    if(a.servicio==="iatf" && a.fecha){
-      origen="IATF";
-    }
-    lista.innerHTML+=`
-      <div class="box">
-        <b>${a.id}</b> (${a.cat})<br>
-        ${a.sexo} - ${a.color}<br>
-        Madre: ${a.madre || "-"}<br>
-        <span class="small">${origen}</span>
-      </div>`;
+
+function renderEst() {
+  estSel.innerHTML = "<option value=''>Seleccionar establecimiento</option>";
+  data.establecimientos.forEach((e, i) => {
+    estSel.innerHTML += `<option value="${i}">${e.nombre}</option>`;
   });
 }
 renderEst();
+
+/* LOTES */
+function loadLotes() {
+  loteSel.innerHTML = "<option value=''>Seleccionar lote</option>";
+  rodeoSel.innerHTML = "";
+  lista.innerHTML = "";
+  let e = data.establecimientos[estSel.value];
+  if (!e) return;
+  e.lotes.forEach((l, i) => {
+    loteSel.innerHTML += `<option value="${i}">${l.nombre}</option>`;
+  });
+}
+
+function addLote() {
+  let e = data.establecimientos[estSel.value];
+  if (!e) return alert("Seleccioná un establecimiento");
+  if (!loteNombre.value) return alert("Nombre del lote");
+  e.lotes.push({ nombre: loteNombre.value, rodeos: [] });
+  loteNombre.value = "";
+  save();
+  loadLotes();
+}
+
+/* RODEOS */
+function loadRodeos() {
+  rodeoSel.innerHTML = "<option value=''>Seleccionar rodeo</option>";
+  lista.innerHTML = "";
+  let l = data.establecimientos[estSel.value]?.lotes[loteSel.value];
+  if (!l) return;
+  l.rodeos.forEach((r, i) => {
+    rodeoSel.innerHTML += `<option value="${i}">${r.nombre}</option>`;
+  });
+}
+
+function addRodeo() {
+  let l = data.establecimientos[estSel.value]?.lotes[loteSel.value];
+  if (!l) return alert("Seleccioná un lote");
+  if (!rodeoNombre.value) return alert("Nombre del rodeo");
+  l.rodeos.push({ nombre: rodeoNombre.value, animales: [] });
+  rodeoNombre.value = "";
+  save();
+  loadRodeos();
+}
+
+/* ANIMALES */
+function addAnimal() {
+  let r = data.establecimientos[estSel.value]
+    ?.lotes[loteSel.value]
+    ?.rodeos[rodeoSel.value];
+  if (!r) return alert("Seleccioná un rodeo");
+
+  r.animales.push({
+    id: aniId.value,
+    cat: aniCat.value,
+    sexo: aniSexo.value,
+    color: aniColor.value,
+    madre: aniMadre.value,
+    servicio: aniServ.value || "natural",
+    fecha: aniFecha.value
+  });
+
+  aniId.value = aniSexo.value = aniColor.value = aniMadre.value = aniFecha.value = "";
+  save();
+  showAnimales();
+}
+
+function showAnimales() {
+  lista.innerHTML = "";
+  let r = data.establecimientos[estSel.value]
+    ?.lotes[loteSel.value]
+    ?.rodeos[rodeoSel.value];
+  if (!r) return;
+
+  r.animales.forEach(a => {
+    lista.innerHTML += `
+      <div class="card">
+        <b>${a.id}</b> (${a.cat})<br>
+        ${a.sexo} · ${a.color}<br>
+        Madre: ${a.madre || "-"}<br>
+        <span class="small">${a.servicio === "iatf" ? "IATF" : "Servicio natural"}</span>
+      </div>
+    `;
+  });
+}
 </script>
 
 </body>
