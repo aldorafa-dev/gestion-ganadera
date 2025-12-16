@@ -11,7 +11,12 @@
     .item { border: 1px solid #ccc; padding: 8px; margin-top: 8px; }
   </style>
 </head>
-<body>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+  <body>
 
 <h2>Animales</h2>
 
