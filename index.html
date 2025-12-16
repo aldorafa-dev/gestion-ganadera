@@ -2,13 +2,65 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>PRUEBA</title>
+<title>Gestión Ganadera</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { font-family: Arial; padding: 15px; }
+h2 { margin-top: 20px; }
+input, button, select {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+}
+.box {
+  border: 1px solid #999;
+  padding: 10px;
+  margin-top: 10px;
+}
+</style>
 </head>
 <body>
 
-<h1>PRUEBA OK</h1>
+<h2>Establecimientos</h2>
+<input id="estNombre" placeholder="Nombre del establecimiento">
+<button onclick="agregarEst()">Agregar establecimiento</button>
 
-<button>AGREGAR ESTABLECIMIENTO</button>
+<div id="estLista"></div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("ganaderia")) || {
+  establecimientos: []
+};
+
+function guardar() {
+  localStorage.setItem("ganaderia", JSON.stringify(data));
+}
+
+function agregarEst() {
+  if (!estNombre.value) return alert("Escribí un nombre");
+  data.establecimientos.push({
+    nombre: estNombre.value,
+    lotes: []
+  });
+  estNombre.value = "";
+  guardar();
+  mostrarEst();
+}
+
+function mostrarEst() {
+  estLista.innerHTML = "";
+  data.establecimientos.forEach((e, i) => {
+    estLista.innerHTML += `
+      <div class="box">
+        <b>${e.nombre}</b><br>
+        Lotes: ${e.lotes.length}
+      </div>
+    `;
+  });
+}
+
+mostrarEst();
+</script>
 
 </body>
 </html>
