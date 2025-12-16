@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión Ganadera</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2e7d32">
+  <style>
+    body { font-family: Arial; padding: 15px; }
+    input, select, button { width: 100%; margin: 5px 0; padding: 8px; }
+    .item { border: 1px solid #ccc; padding: 8px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<h2>Animales</h2>
+
+<input id="id" placeholder="Identificación">
+<select id="categoria">
+  <option>Vaca</option>
+  <option>Vaquillona</option>
+  <option>Ternero</option>
+</select>
+<input id="sexo" placeholder="Sexo">
+<input id="color" placeholder="Color">
+
+<button onclick="guardar()">Guardar animal</button>
+
+<div id="lista"></div>
+
+<script>
+let animales = JSON.parse(localStorage.getItem("animales")) || [];
+
+function guardar() {
+  animales.push({
+    id: id.value,
+    categoria: categoria.value,
+    sexo: sexo.value,
+    color: color.value
+  });
+  localStorage.setItem("animales", JSON.stringify(animales));
+  mostrar();
+}
+
+function mostrar() {
+  lista.innerHTML = "";
+  animales.forEach(a => {
+    lista.innerHTML += `<div class="item">
+      <b>${a.id}</b><br>
+      ${a.categoria} - ${a.sexo} - ${a.color}
+    </div>`;
+  });
+}
+mostrar();
+</script>
+
+</body>
+</html>
