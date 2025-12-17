@@ -101,22 +101,46 @@ body{
   <aside class="menu">
     <h1>Ganadero B&M</h1>
     <ul>
-      <li class="active">Inicio</li>
-      <li>Animales</li>
-      <li>Salud</li>
-      <li>Reproducción</li>
-      <li>Configuración</li>
+      <li class="active" onclick="mostrarInicio(this)">Inicio</li>
+      <li onclick="mostrarInicio(this)">Animales</li>
+      <li onclick="mostrarInicio(this)">Salud</li>
+      <li onclick="mostrarInicio(this)">Reproducción</li>
+      <li onclick="mostrarConfiguracion(this)">Configuración</li>
     </ul>
   </aside>
   <main class="content">
-    <!-- DASHBOARD GENERAL (FIJO) -->
-    <div class="dashboard-general">
-      <div class="dg-item">Rodeos activos<span id="dgRodeos">0</span></div>
-      <div class="dg-item">Animales totales<span id="dgAnimales">0</span></div>
-      <div class="dg-item">Alertas<span id="dgAlertas">0</span></div>
-    </div>
-    <!-- RODEOS (2 POR FILA) -->
-    <div class="rodeos" id="rodeos"></div>
+
+    <!-- INICIO -->
+    <section id="inicioView">
+      <div class="dashboard-general">
+        <div class="dg-item">Rodeos activos<span id="dgRodeos">0</span></div>
+        <div class="dg-item">Animales totales<span id="dgAnimales">0</span></div>
+        <div class="dg-item">Alertas<span id="dgAlertas">0</span></div>
+      </div>
+      <div class="rodeos" id="rodeos"></div>
+    </section>
+
+    <!-- CONFIGURACIÓN -->
+    <section id="configView" style="display:none">
+      <h2>Configuración</h2>
+      <div class="rodeo-card">
+        <h3>Datos del establecimiento</h3>
+        <p>Nombre · Propietario · Ubicación</p>
+      </div>
+      <div class="rodeo-card">
+        <h3>Rodeos y lotes</h3>
+        <p>Alta · Edición · Baja</p>
+      </div>
+      <div class="rodeo-card">
+        <h3>Dispositivos</h3>
+        <p>Lector RFID · Balanza · Sincronización</p>
+      </div>
+      <div class="rodeo-card">
+        <h3>Usuarios y permisos</h3>
+        <p>Administrador · Operador</p>
+      </div>
+    </section>
+
   </main>
 </div>
 <script>
@@ -152,7 +176,10 @@ function render(){
         <h3>${r.nombre}</h3>
         <div class="rodeo-info">Lote actual: <b>${r.lote}</b></div>
         <div class="rodeo-stats">
-          <div class="stat"><b>${r.vacas}</b>Vacas</div>
+  <div class="stat" onclick="abrirListado('${r.nombre}','vacas')"><b>${r.vacas}</b>Vacas</div>
+  <div class="stat" onclick="abrirListado('${r.nombre}','toros')"><b>${r.toros}</b>Toros</div>
+  <div class="stat" onclick="abrirListado('${r.nombre}','terneros')"><b>${r.terneros}</b>Terneros/as</div>
+</div>
           <div class="stat"><b>${r.toros}</b>Toros</div>
           <div class="stat"><b>${r.terneros}</b>Terneros/as</div>
         </div>
@@ -161,6 +188,11 @@ function render(){
   });
 
   localStorage.setItem('ganaderoBM',JSON.stringify(data));
+}
+
+function abrirListado(rodeo,tipo){
+  // Redirección simple (luego se reemplaza por vista real)
+  window.location.href = `listado.html?rodeo=${encodeURIComponent(rodeo)}&tipo=${encodeURIComponent(tipo)}`;
 }
 
 document.addEventListener('DOMContentLoaded',render);
