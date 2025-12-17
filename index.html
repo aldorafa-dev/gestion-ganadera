@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Ganadero B&M</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
 :root{
   --verde:#2e7d32;
@@ -12,140 +11,93 @@
   --oscuro:#1f2933;
   --borde:#dcdfe3;
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto;
   background:var(--gris);
   color:#222;
 }
-
-/* ===== LAYOUT ===== */
 .app{
   display:grid;
   grid-template-columns:240px 1fr;
   height:100vh;
 }
-
 /* ===== MENU ===== */
 .menu{
-  background:#ffffff;
+  background:#fff;
   border-right:1px solid var(--borde);
   padding:20px;
 }
-
 .menu h1{
   font-size:20px;
   margin:0 0 20px 0;
   color:var(--verde);
 }
-
-.menu ul{
-  list-style:none;
-  padding:0;
-  margin:0;
-}
-
+.menu ul{list-style:none;padding:0;margin:0}
 .menu li{
   padding:12px 10px;
   border-radius:8px;
   margin-bottom:6px;
   cursor:pointer;
 }
-
-.menu li:hover{
-  background:var(--gris);
-}
-
 .menu li.active{
   background:var(--verde);
-  color:white;
+  color:#fff;
   font-weight:600;
 }
-
+.menu li:hover{background:var(--gris)}
 /* ===== CONTENT ===== */
-.content{
-  padding:25px;
-  overflow:auto;
-}
-
-/* ===== DASHBOARD ===== */
-.dashboard{
+.content{padding:25px;overflow:auto}
+/* ===== DASHBOARD GENERAL ===== */
+.dashboard-general{
+  background:#fff;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:15px;
-  margin-bottom:25px;
+  gap:20px;
+  margin-bottom:30px;
 }
-
-.card{
-  background:white;
-  border-radius:14px;
-  padding:20px;
-  text-align:center;
-  box-shadow:0 4px 12px rgba(0,0,0,.06);
-}
-
-.card span{
-  font-size:32px;
-  font-weight:700;
-  display:block;
-  margin-top:8px;
-}
-
+.dg-item{text-align:center}
+.dg-item span{display:block;font-size:34px;font-weight:700;margin-top:6px}
 /* ===== RODEOS ===== */
 .rodeos{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:20px;
+  grid-template-columns:repeat(2,1fr);
+  gap:22px;
 }
-
 .rodeo-card{
-  background:white;
-  border-radius:16px;
+  background:#fff;
+  border-radius:18px;
   padding:18px;
   box-shadow:0 6px 16px rgba(0,0,0,.08);
 }
-
-.rodeo-card h3{
-  margin:0 0 10px 0;
-}
-
-.rodeo-info{
-  font-size:14px;
-  margin-bottom:12px;
-}
-
+.rodeo-card h3{margin:0 0 10px 0}
+.rodeo-info{font-size:14px;margin-bottom:14px}
 .rodeo-stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:10px;
 }
-
 .stat{
   background:var(--gris);
-  border-radius:10px;
-  padding:10px;
+  border-radius:12px;
+  padding:12px;
   text-align:center;
-  cursor:pointer;
 }
-
-.stat:hover{
-  background:#e0e0e0;
-}
-
-.stat b{
-  font-size:20px;
-  display:block;
+.stat b{display:block;font-size:20px}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .menu{display:none}
+  .dashboard-general{grid-template-columns:1fr}
+  .rodeos{grid-template-columns:1fr}
 }
 </style>
 </head>
-
 <body>
 <div class="app">
-
-  <!-- MENU -->
   <aside class="menu">
     <h1>Ganadero B&M</h1>
     <ul>
@@ -156,84 +108,12 @@ body{
       <li>Configuración</li>
     </ul>
   </aside>
-
-  <!-- CONTENT -->
   <main class="content">
-
-    <!-- DASHBOARD SUPERIOR (NO SE TOCA) -->
-    <div class="dashboard">
-      <div class="card">
-        Rodeos activos
-        <span id="dashRodeos">0</span>
-      </div>
-      <div class="card">
-        Animales total
-        <span id="dashAnimales">0</span>
-      </div>
-      <div class="card">
-        Alertas
-        <span id="dashAlertas">0</span>
-      </div>
+    <!-- DASHBOARD GENERAL (FIJO) -->
+    <div class="dashboard-general">
+      <div class="dg-item">Rodeos activos<span id="dgRodeos">0</span></div>
+      <div class="dg-item">Animales totales<span id="dgAnimales">0</span></div>
+      <div class="dg-item">Alertas<span id="dgAlertas">0</span></div>
     </div>
-
-    <!-- RODEOS -->
-    <div class="rodeos" id="rodeosContainer"></div>
-
-  </main>
-</div>
-
-<script>
-/* ===== DATOS BASE (SIMULADOS POR AHORA) ===== */
-let data = JSON.parse(localStorage.getItem("ganaderoBM")) || {
-  rodeos:[
-    {nombre:"Rodeo Cría", lote:"Lote 2", vacas:120, toros:4, terneros:38},
-    {nombre:"Rodeo Recría", lote:"Lote 1", vacas:0, toros:0, terneros:85},
-    {nombre:"Rodeo Invernada", lote:"Lote 3", vacas:0, toros:0, terneros:113},
-    {nombre:"Rodeo Vaquillonas", lote:"Lote 4", vacas:34, toros:0, terneros:0}
-  ],
-  alertas:2
-};
-
-function render(){
-  // Dashboard
-  dashRodeos.textContent = data.rodeos.length;
-  dashAnimales.textContent = data.rodeos.reduce((t,r)=>t+r.vacas+r.toros+r.terneros,0);
-  dashAlertas.textContent = data.alertas;
-
-  // Rodeos
-  rodeosContainer.innerHTML="";
-  data.rodeos.forEach(r=>{
-    rodeosContainer.innerHTML+=`
-      <div class="rodeo-card">
-        <h3>${r.nombre}</h3>
-        <div class="rodeo-info">Lote actual: <b>${r.lote}</b></div>
-        <div class="rodeo-stats">
-          <div class="stat" onclick="detalle('${r.nombre}','vacas')">
-            <b>${r.vacas}</b>Vacas
-          </div>
-          <div class="stat" onclick="detalle('${r.nombre}','toros')">
-            <b>${r.toros}</b>Toros
-          </div>
-          <div class="stat" onclick="detalle('${r.nombre}','terneros')">
-            <b>${r.terneros}</b>Terneros/as
-          </div>
-        </div>
-      </div>
-    `;
-  });
-
-  localStorage.setItem("ganaderoBM",JSON.stringify(data));
-}
-
-function detalle(rodeo,tipo){
-  alert("Abrir listado de "+tipo+" del "+rodeo);
-  // Acá después va:
-  // - listado
-  // - ficha individual
-}
-
-render();
-</script>
-
-</body>
-</html>
+    <!-- RODEOS (2 POR FILA) -->
+    <div class="rodeos" id="rodeos"></div>
