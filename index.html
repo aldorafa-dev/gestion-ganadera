@@ -101,11 +101,11 @@ body{
   <aside class="menu">
     <h1>Ganadero B&M</h1>
     <ul>
-      <li class="active" onclick="mostrarInicio(this)">Inicio</li>
-      <li onclick="mostrarInicio(this)">Animales</li>
-      <li onclick="mostrarInicio(this)">Salud</li>
-      <li onclick="mostrarInicio(this)">Reproducción</li>
-      <li onclick="mostrarConfiguracion(this)">Configuración</li>
+      <li class="active">Inicio</li>
+      <li>Animales</li>
+      <li>Salud</li>
+      <li>Reproducción</li>
+      <li>Configuración</li>
     </ul>
   </aside>
   <main class="content">
@@ -118,27 +118,6 @@ body{
         <div class="dg-item">Alertas<span id="dgAlertas">0</span></div>
       </div>
       <div class="rodeos" id="rodeos"></div>
-    </section>
-
-    <!-- CONFIGURACIÓN -->
-    <section id="configView" style="display:none">
-      <h2>Configuración</h2>
-      <div class="rodeo-card">
-        <h3>Datos del establecimiento</h3>
-        <p>Nombre · Propietario · Ubicación</p>
-      </div>
-      <div class="rodeo-card">
-        <h3>Rodeos y lotes</h3>
-        <p>Alta · Edición · Baja</p>
-      </div>
-      <div class="rodeo-card">
-        <h3>Dispositivos</h3>
-        <p>Lector RFID · Balanza · Sincronización</p>
-      </div>
-      <div class="rodeo-card">
-        <h3>Usuarios y permisos</h3>
-        <p>Administrador · Operador</p>
-      </div>
     </section>
 
   </main>
@@ -180,8 +159,6 @@ function render(){
   <div class="stat" onclick="abrirListado('${r.nombre}','toros')"><b>${r.toros}</b>Toros</div>
   <div class="stat" onclick="abrirListado('${r.nombre}','terneros')"><b>${r.terneros}</b>Terneros/as</div>
 </div>
-          <div class="stat"><b>${r.toros}</b>Toros</div>
-          <div class="stat"><b>${r.terneros}</b>Terneros/as</div>
         </div>
       </div>
     `);
@@ -199,3 +176,57 @@ document.addEventListener('DOMContentLoaded',render);
 </script>
 </body>
 </html>
+
+---
+
+## Croqui – Vista **Configuración** (menú izquierdo)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                            GANADERO B&M                                 │
+├─────────────────────┬───────────────────────────────────────────────────┤
+│ MENÚ IZQUIERDO      │ CONTENIDO PRINCIPAL                                │
+│                     │                                                   │
+│ ▸ Inicio            │  ┌─────────────────────────────────────────────┐  │
+│ ▸ Animales          │  │            DASHBOARD GENERAL                 │  │
+│ ▸ Salud             │  │  Rodeos activos · Animales · Alertas          │  │
+│ ▸ Reproducción      │  │  (ÚNICO · HORIZONTAL · FIJO)                 │  │
+│ ▸ Configuración ●   │  └─────────────────────────────────────────────┘  │
+│                     │                                                   │
+│                     │  ┌─────────────────────────────────────────────┐  │
+│                     │  │ OPCIONES DE CONFIGURACIÓN                    │  │
+│                     │  │                                             │  │
+│                     │  │ ▸ Datos del establecimiento                  │  │
+│                     │  │   - Nombre del campo                         │  │
+│                     │  │   - Propietario                              │  │
+│                     │  │   - Ubicación                                │  │
+│                     │  │                                             │  │
+│                     │  │ ▸ Rodeos y lotes                             │  │
+│                     │  │   - Alta / edición / baja                    │  │
+│                     │  │   - Asignación a lotes                      │  │
+│                     │  │                                             │  │
+│                     │  │ ▸ Categorías de animales                     │  │
+│                     │  │   - Vacas · Toros · Terneros · Vaquillonas   │  │
+│                     │  │                                             │  │
+│                     │  │ ▸ Dispositivos                               │  │
+│                     │  │   - Lector RFID                              │  │
+│                     │  │   - Balanza                                  │  │
+│                     │  │   - Sincronización                           │  │
+│                     │  │                                             │  │
+│                     │  │ ▸ Usuarios y permisos                        │  │
+│                     │  │   - Administrador                            │  │
+│                     │  │   - Operador                                 │  │
+│                     │  └─────────────────────────────────────────────┘  │
+│                     │                                                   │
+├─────────────────────┴───────────────────────────────────────────────────┤
+│ Barra inferior: estado · sincronización · usuario                        │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Reglas de esta vista
+- **Siempre visible**: menú izquierdo completo.
+- **Siempre visible**: dashboard general horizontal (no cambia).
+- **No se muestran** rodeos ni listados.
+- El foco es **configurar**, no operar.
+- Esta estructura queda fija hasta nuevo aviso.
+
