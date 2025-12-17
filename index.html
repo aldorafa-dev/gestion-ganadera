@@ -7,20 +7,16 @@
 
 <style>
 :root{
-  --verde:#2e7d32;
-  --verde-claro:#e8f5e9;
-  --gris:#f4f6f8;
-  --texto:#333;
-  --borde:#ddd;
+  --verde:#1f7a5a;
+  --gris:#f3f5f7;
+  --oscuro:#1e1e1e;
+  --borde:#dcdcdc;
 }
-
-*{box-sizing:border-box}
 
 body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  font-family: system-ui, Segoe UI, Roboto, Arial;
   background:var(--gris);
-  color:var(--texto);
 }
 
 /* ===== LAYOUT ===== */
@@ -29,255 +25,223 @@ body{
   height:100vh;
 }
 
-/* ===== MENU LATERAL ===== */
-.sidebar{
-  width:240px;
-  background:#1f2933;
-  color:#fff;
+/* ===== MENU ===== */
+.menu{
+  width:220px;
+  background:#ffffff;
+  border-right:1px solid var(--borde);
   padding:20px 0;
 }
 
-.sidebar h1{
+.menu h1{
   font-size:18px;
   text-align:center;
   margin-bottom:30px;
-  font-weight:600;
+  color:var(--verde);
 }
 
-.menu a{
+.menu button{
   display:block;
-  padding:14px 25px;
-  color:#d1d5db;
-  text-decoration:none;
+  width:100%;
+  padding:12px 20px;
+  border:none;
+  background:none;
+  text-align:left;
   font-size:15px;
+  cursor:pointer;
 }
 
-.menu a:hover,
-.menu a.active{
-  background:#374151;
-  color:#fff;
+.menu button:hover{
+  background:#eef3f1;
 }
 
-/* ===== CONTENIDO ===== */
-.main{
+/* ===== CONTENT ===== */
+.content{
   flex:1;
   padding:25px;
   overflow:auto;
 }
 
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:25px;
+.section{
+  background:#fff;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:20px;
+  border:1px solid var(--borde);
 }
 
-.header h2{
-  margin:0;
+h2{
+  margin-top:0;
   color:var(--verde);
 }
 
-/* ===== TARJETAS ===== */
-.card{
-  background:#fff;
-  border-radius:14px;
-  padding:18px;
-  box-shadow:0 6px 16px rgba(0,0,0,.06);
-  margin-bottom:20px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:20px;
-}
-
-/* ===== SELECTORES ===== */
-select, input, button{
+/* ===== FORM ===== */
+input, select{
   width:100%;
   padding:10px;
   margin-top:6px;
-  border-radius:10px;
+  margin-bottom:12px;
+  border-radius:8px;
   border:1px solid var(--borde);
   font-size:14px;
 }
 
-button{
+button.primary{
   background:var(--verde);
   color:#fff;
   border:none;
-  font-weight:600;
+  padding:10px 14px;
+  border-radius:10px;
   cursor:pointer;
 }
 
-button:hover{opacity:.9}
-
-/* ===== RESUMEN RODEO ===== */
-.stats{
+/* ===== GRID ===== */
+.grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
-  margin-top:15px;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
 }
 
-.stat{
-  background:var(--verde-claro);
+/* ===== CARDS ===== */
+.card{
+  border:1px solid var(--borde);
   border-radius:12px;
   padding:15px;
-  text-align:center;
   cursor:pointer;
 }
-
-.stat b{
-  display:block;
-  font-size:22px;
-  margin-bottom:5px;
+.card:hover{
+  background:#f6faf8;
 }
-
-/* ===== LISTADOS ===== */
-.list-item{
-  padding:12px;
-  border-bottom:1px solid var(--borde);
-  cursor:pointer;
+.small{
+  font-size:13px;
+  color:#666;
 }
-
-.list-item:hover{
-  background:var(--gris);
-}
-.small{font-size:13px;color:#666}
 </style>
 </head>
 
 <body>
+
 <div class="app">
 
   <!-- MENU -->
-  <aside class="sidebar">
+  <div class="menu">
     <h1>Ganadero B&M</h1>
-    <nav class="menu">
-      <a class="active">Inicio</a>
-      <a>Animales</a>
-      <a>Salud</a>
-      <a>Reproducción</a>
-      <a>Configuración</a>
-    </nav>
-  </aside>
+    <button onclick="vista('inicio')">Inicio</button>
+    <button onclick="vista('animales')">Animales</button>
+    <button>Salud</button>
+    <button>Reproducción</button>
+    <button onclick="vista('config')">Configuración</button>
+  </div>
 
-  <!-- CONTENIDO -->
-  <main class="main">
+  <!-- CONTENT -->
+  <div class="content">
 
-    <div class="header">
+    <!-- INICIO -->
+    <div id="inicio" class="section">
       <h2>Inicio</h2>
-      <div class="small">Establecimiento: <b>Predeterminado</b></div>
+
+      <label>Seleccionar rodeo</label>
+      <select id="rodeoSelect" onchange="mostrarResumen()"></select>
+
+      <div class="grid" id="resumen"></div>
     </div>
 
-    <div class="grid">
-
-      <!-- PANEL IZQUIERDO -->
-      <div>
-
-        <div class="card">
-          <h3>Selección de rodeo</h3>
-
-          <label>Rodeo</label>
-          <select>
-            <option>Rodeo Cría 1</option>
-            <option>Rodeo Recría</option>
-          </select>
-
-          <p class="small">Lote actual: <b>Lote Norte</b></p>
-
-          <div class="stats">
-            <div class="stat">
-              <b>120</b>
-              Vacas
-            </div>
-            <div class="stat">
-              <b>4</b>
-              Toros
-            </div>
-            <div class="stat">
-              <b>85</b>
-              Terneros/as
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Listado (ejemplo: Vacas)</h3>
-
-          <div class="list-item">
-            <b>Caravana 1542</b><br>
-            <span class="small">Color: Negra · Rodeo Cría 1</span>
-          </div>
-
-          <div class="list-item">
-            <b>Caravana 1543</b><br>
-            <span class="small">Color: Colorada · Rodeo Cría 1</span>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- PANEL DERECHO -->
-      <div>
-
-        <div class="card">
-          <h3>Altas</h3>
-
-          <label>¿Qué desea dar de alta?</label>
-          <select>
-            <option>Animal</option>
-            <option>Rodeo</option>
-            <option>Lote</option>
-          </select>
-
-          <hr>
-
-          <label>Tipo de animal</label>
-          <select>
-            <option>Vaca</option>
-            <option>Toro</option>
-            <option>Ternero/a</option>
-          </select>
-
-          <label>Rodeo</label>
-          <select>
-            <option>Rodeo Cría 1</option>
-          </select>
-
-          <label>Sexo</label>
-          <select>
-            <option>M</option>
-            <option>H</option>
-          </select>
-
-          <label>Color</label>
-          <select>
-            <option>N</option>
-            <option>C</option>
-            <option>PN</option>
-            <option>PC</option>
-          </select>
-
-          <label>Caravana</label>
-          <input value="2451">
-          <label>
-            <input type="checkbox"> Sin caravanear
-          </label>
-
-          <label>Fecha</label>
-          <input type="date">
-
-          <button>Guardar alta</button>
-        </div>
-
-      </div>
-
+    <!-- ANIMALES -->
+    <div id="animales" class="section" style="display:none">
+      <h2>Animales del rodeo</h2>
+      <div id="listaAnimales"></div>
     </div>
 
-  </main>
+    <!-- CONFIG -->
+    <div id="config" class="section" style="display:none">
+      <h2>Configuración</h2>
+
+      <label>Establecimiento</label>
+      <input id="establecimiento">
+
+      <button class="primary" onclick="guardarConfig()">Guardar</button>
+    </div>
+
+  </div>
 </div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("ganaderoBM")) || {
+  establecimiento:"",
+  lotes:["Lote 1","Lote 2"],
+  rodeos:[
+    {nombre:"Rodeo A", lote:"Lote 1", animales:[]}
+  ]
+};
+
+function save(){
+  localStorage.setItem("ganaderoBM", JSON.stringify(data));
+}
+
+/* ===== VISTAS ===== */
+function vista(id){
+  ["inicio","animales","config"].forEach(v=>{
+    document.getElementById(v).style.display="none";
+  });
+  document.getElementById(id).style.display="block";
+}
+
+/* ===== CONFIG ===== */
+establecimiento.value=data.establecimiento;
+
+function guardarConfig(){
+  data.establecimiento=establecimiento.value;
+  save();
+  alert("Guardado");
+}
+
+/* ===== INICIO ===== */
+function cargarRodeos(){
+  rodeoSelect.innerHTML="";
+  data.rodeos.forEach((r,i)=>{
+    rodeoSelect.innerHTML+=`<option value="${i}">${r.nombre}</option>`;
+  });
+}
+cargarRodeos();
+
+function mostrarResumen(){
+  let r=data.rodeos[rodeoSelect.value];
+  let vacas=r.animales.filter(a=>a.tipo=="Vaca").length;
+  let toros=r.animales.filter(a=>a.tipo=="Toro").length;
+  let terneros=r.animales.filter(a=>a.tipo=="Ternero").length;
+
+  resumen.innerHTML=`
+    <div class="card" onclick="listar('Vaca')">
+      <b>Vacas</b><br>${vacas}
+    </div>
+    <div class="card" onclick="listar('Toro')">
+      <b>Toros</b><br>${toros}
+    </div>
+    <div class="card" onclick="listar('Ternero')">
+      <b>Terneros</b><br>${terneros}
+    </div>
+    <div class="card">
+      <b>Lote</b><br>${r.lote}
+    </div>
+  `;
+}
+mostrarResumen();
+
+/* ===== LISTADO ===== */
+function listar(tipo){
+  vista("animales");
+  let r=data.rodeos[rodeoSelect.value];
+  listaAnimales.innerHTML="";
+  r.animales.filter(a=>a.tipo==tipo).forEach(a=>{
+    listaAnimales.innerHTML+=`
+      <div class="card">
+        <b>${a.caravana}</b><br>
+        ${a.sexo} - ${a.color}
+      </div>
+    `;
+  });
+}
+</script>
+
 </body>
 </html>
