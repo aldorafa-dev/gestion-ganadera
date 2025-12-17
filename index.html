@@ -20,7 +20,7 @@ body{
 }
 .app{
   display:grid;
-  grid-template-columns:240px 1fr;
+  grid-template-columns:260px 1fr;
   height:100vh;
 }
 /* ===== MENU ===== */
@@ -36,9 +36,9 @@ body{
 }
 .menu ul{list-style:none;padding:0;margin:0}
 .menu li{
-  padding:12px 10px;
+  padding:10px;
   border-radius:8px;
-  margin-bottom:6px;
+  margin-bottom:4px;
   cursor:pointer;
 }
 .menu li.active{
@@ -47,6 +47,8 @@ body{
   font-weight:600;
 }
 .menu li:hover{background:var(--gris)}
+.submenu{margin-left:10px;margin-top:4px}
+.submenu li{font-size:14px}
 /* ===== CONTENT ===== */
 .content{padding:25px;overflow:auto}
 /* ===== DASHBOARD GENERAL ===== */
@@ -86,8 +88,16 @@ body{
   border-radius:12px;
   padding:12px;
   text-align:center;
+  cursor:pointer;
 }
 .stat b{display:block;font-size:20px}
+/* ===== CONFIG ===== */
+.config-box{
+  background:#fff;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
+}
 @media(max-width:900px){
   .app{grid-template-columns:1fr}
   .menu{display:none}
@@ -101,30 +111,48 @@ body{
   <aside class="menu">
     <h1>Ganadero B&M</h1>
     <ul>
-      <li class="active">Inicio</li>
-      <li>Animales</li>
-      <li>Salud</li>
-      <li>Reproducción</li>
-      <li>Configuración</li>
+      <li class="active" onclick="mostrarInicio(this)">Inicio</li>
+      <li onclick="mostrarSimple(this)">Animales</li>
+      <li onclick="mostrarSimple(this)">Salud</li>
+      <li onclick="mostrarSimple(this)">Reproducción</li>
+      <li onclick="mostrarConfig(this)">Configuración</li>
+      <ul class="submenu" id="configSub" style="display:none">
+        <li>Datos del establecimiento</li>
+        <li>Rodeos y lotes</li>
+        <li>Categorías de animales</li>
+        <li>Dispositivos</li>
+        <li>Usuarios y permisos</li>
+        <li>Sistema</li>
+      </ul>
     </ul>
   </aside>
+
   <main class="content">
+
+    <!-- DASHBOARD GENERAL (SIEMPRE VISIBLE) -->
+    <div class="dashboard-general">
+      <div class="dg-item">Rodeos activos<span id="dgRodeos">0</span></div>
+      <div class="dg-item">Animales totales<span id="dgAnimales">0</span></div>
+      <div class="dg-item">Alertas<span id="dgAlertas">0</span></div>
+    </div>
 
     <!-- INICIO -->
     <section id="inicioView">
-      <div class="dashboard-general">
-        <div class="dg-item">Rodeos activos<span id="dgRodeos">0</span></div>
-        <div class="dg-item">Animales totales<span id="dgAnimales">0</span></div>
-        <div class="dg-item">Alertas<span id="dgAlertas">0</span></div>
-      </div>
       <div class="rodeos" id="rodeos"></div>
+    </section>
+
+    <!-- CONFIGURACION -->
+    <section id="configView" style="display:none">
+      <div class="config-box">
+        <h3>Configuración</h3>
+        <p>Seleccione una opción del submenú izquierdo.</p>
+      </div>
     </section>
 
   </main>
 </div>
 <script>
-// === DATOS INICIALES (compatibles con GitHub Pages) ===
-const defaultData = {
+const data = {
   rodeos:[
     {nombre:'Rodeo Cría',lote:'Lote 2',vacas:120,toros:4,terneros:38},
     {nombre:'Rodeo Recría',lote:'Lote 1',vacas:0,toros:0,terneros:85},
@@ -134,141 +162,56 @@ const defaultData = {
   alertas:2
 };
 
-let data;
-try{
-  data = JSON.parse(localStorage.getItem('ganaderoBM')) || defaultData;
-}catch(e){
-  data = defaultData;
+function limpiarMenu(){
+  document.querySelectorAll('.menu > ul > li').forEach(li=>li.classList.remove('active'));
+}
+
+function mostrarInicio(el){
+  limpiarMenu();
+  el.classList.add('active');
+  inicioView.style.display='block';
+  configView.style.display='none';
+  configSub.style.display='none';
+}
+
+function mostrarConfig(el){
+  limpiarMenu();
+  el.classList.add('active');
+  inicioView.style.display='none';
+  configView.style.display='block';
+  configSub.style.display='block';
+}
+
+function mostrarSimple(el){
+  limpiarMenu();
+  el.classList.add('active');
+  inicioView.style.display='none';
+  configView.style.display='none';
+  configSub.style.display='none';
 }
 
 function render(){
-  document.getElementById('dgRodeos').textContent = data.rodeos.length;
-  document.getElementById('dgAnimales').textContent = data.rodeos.reduce((t,r)=>t+r.vacas+r.toros+r.terneros,0);
-  document.getElementById('dgAlertas').textContent = data.alertas;
+  dgRodeos.textContent = data.rodeos.length;
+  dgAnimales.textContent = data.rodeos.reduce((t,r)=>t+r.vacas+r.toros+r.terneros,0);
+  dgAlertas.textContent = data.alertas;
 
-  const cont = document.getElementById('rodeos');
-  cont.innerHTML='';
-
+  rodeos.innerHTML='';
   data.rodeos.forEach(r=>{
-    cont.insertAdjacentHTML('beforeend',`
+    rodeos.insertAdjacentHTML('beforeend',`
       <div class="rodeo-card">
         <h3>${r.nombre}</h3>
-        <div class="rodeo-info">Lote actual: <b>${r.lote}</b></div>
+        <div class="rodeo-info">Lote: <b>${r.lote}</b></div>
         <div class="rodeo-stats">
-  <div class="stat" onclick="abrirListado('${r.nombre}','vacas')"><b>${r.vacas}</b>Vacas</div>
-  <div class="stat" onclick="abrirListado('${r.nombre}','toros')"><b>${r.toros}</b>Toros</div>
-  <div class="stat" onclick="abrirListado('${r.nombre}','terneros')"><b>${r.terneros}</b>Terneros/as</div>
-</div>
+          <div class="stat"><b>${r.vacas}</b>Vacas</div>
+          <div class="stat"><b>${r.toros}</b>Toros</div>
+          <div class="stat"><b>${r.terneros}</b>Terneros</div>
         </div>
       </div>
     `);
   });
-
-  localStorage.setItem('ganaderoBM',JSON.stringify(data));
-}
-
-function abrirListado(rodeo,tipo){
-  // Redirección simple (luego se reemplaza por vista real)
-  window.location.href = `listado.html?rodeo=${encodeURIComponent(rodeo)}&tipo=${encodeURIComponent(tipo)}`;
 }
 
 document.addEventListener('DOMContentLoaded',render);
 </script>
 </body>
 </html>
-
----
-
-## Croqui – Vista **Configuración** (menú izquierdo)
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                            GANADERO B&M                                 │
-├─────────────────────┬───────────────────────────────────────────────────┤
-│ MENÚ IZQUIERDO      │ CONTENIDO PRINCIPAL                                │
-│                     │                                                   │
-│ ▸ Inicio            │  ┌─────────────────────────────────────────────┐  │
-│ ▸ Animales          │  │            DASHBOARD GENERAL                 │  │
-│ ▸ Salud             │  │  Rodeos activos · Animales · Alertas          │  │
-│ ▸ Reproducción      │  │  (ÚNICO · HORIZONTAL · FIJO)                 │  │
-│ ▸ Configuración ●   │  └─────────────────────────────────────────────┘  │
-│                     │                                                   │
-│                     │  ┌─────────────────────────────────────────────┐  │
-│                     │  │ OPCIONES DE CONFIGURACIÓN                    │  │
-│                     │  │                                             │  │
-│                     │  │ ▸ Datos del establecimiento                  │  │
-│                     │  │   - Nombre del campo                         │  │
-│                     │  │   - Propietario                              │  │
-│                     │  │   - Ubicación                                │  │
-│                     │  │                                             │  │
-│                     │  │ ▸ Rodeos y lotes                             │  │
-│                     │  │   - Alta / edición / baja                    │  │
-│                     │  │   - Asignación a lotes                      │  │
-│                     │  │                                             │  │
-│                     │  │ ▸ Categorías de animales                     │  │
-│                     │  │   - Vacas · Toros · Terneros · Vaquillonas   │  │
-│                     │  │                                             │  │
-│                     │  │ ▸ Dispositivos                               │  │
-│                     │  │   - Lector RFID                              │  │
-│                     │  │   - Balanza                                  │  │
-│                     │  │   - Sincronización                           │  │
-│                     │  │                                             │  │
-│                     │  │ ▸ Usuarios y permisos                        │  │
-│                     │  │   - Administrador                            │  │
-│                     │  │   - Operador                                 │  │
-│                     │  └─────────────────────────────────────────────┘  │
-│                     │                                                   │
-├─────────────────────┴───────────────────────────────────────────────────┤
-│ Barra inferior: estado · sincronización · usuario                        │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-### Reglas de esta vista
-- **Siempre visible**: menú izquierdo completo.
-- **Siempre visible**: dashboard general horizontal (no cambia).
-- **No se muestran** rodeos ni listados.
-- El foco es **configurar**, no operar.
-- Esta estructura queda fija hasta nuevo aviso.
-
----
-
-## Submenú – **Configuración** (MENÚ IZQUIERDO)
-
-```
-Configuración
- ├─ Datos del establecimiento
- │   ├─ Nombre del campo
- │   ├─ Propietario
- │   └─ Ubicación
- │
- ├─ Rodeos y lotes
- │   ├─ Alta de rodeo
- │   ├─ Edición / baja
- │   └─ Asignación a lotes
- │
- ├─ Categorías de animales
- │   ├─ Vacas
- │   ├─ Toros
- │   ├─ Terneros/as
- │   └─ Vaquillonas
- │
- ├─ Dispositivos
- │   ├─ Lector RFID
- │   ├─ Balanza
- │   └─ Sincronización
- │
- ├─ Usuarios y permisos
- │   ├─ Administrador
- │   └─ Operador
- │
- └─ Sistema
-     ├─ Copia de seguridad
-     ├─ Restaurar datos
-     └─ Reset de aplicación
-```
-
-### Regla del submenú
-- Al hacer click en **cualquier subítem**:
-  - Se mantiene el **DASHBOARD GENERAL** visible.
-  - Se muestra **solo** la opción seleccionada.
-  - No aparecen rodeos ni listados operativos.
