@@ -7,240 +7,232 @@
 
 <style>
 :root{
-  --verde:#1f7a5a;
-  --gris:#f3f5f7;
-  --oscuro:#1e1e1e;
-  --borde:#dcdcdc;
+  --verde:#2e7d32;
+  --gris:#f4f6f8;
+  --oscuro:#1f2933;
+  --borde:#dcdfe3;
 }
+
+*{box-sizing:border-box}
 
 body{
   margin:0;
-  font-family: system-ui, Segoe UI, Roboto, Arial;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto;
   background:var(--gris);
+  color:#222;
 }
 
 /* ===== LAYOUT ===== */
 .app{
-  display:flex;
+  display:grid;
+  grid-template-columns:240px 1fr;
   height:100vh;
 }
 
 /* ===== MENU ===== */
 .menu{
-  width:220px;
   background:#ffffff;
   border-right:1px solid var(--borde);
-  padding:20px 0;
+  padding:20px;
 }
 
 .menu h1{
-  font-size:18px;
-  text-align:center;
-  margin-bottom:30px;
+  font-size:20px;
+  margin:0 0 20px 0;
   color:var(--verde);
 }
 
-.menu button{
-  display:block;
-  width:100%;
-  padding:12px 20px;
-  border:none;
-  background:none;
-  text-align:left;
-  font-size:15px;
+.menu ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+
+.menu li{
+  padding:12px 10px;
+  border-radius:8px;
+  margin-bottom:6px;
   cursor:pointer;
 }
 
-.menu button:hover{
-  background:#eef3f1;
+.menu li:hover{
+  background:var(--gris);
+}
+
+.menu li.active{
+  background:var(--verde);
+  color:white;
+  font-weight:600;
 }
 
 /* ===== CONTENT ===== */
 .content{
-  flex:1;
   padding:25px;
   overflow:auto;
 }
 
-.section{
-  background:#fff;
+/* ===== DASHBOARD ===== */
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+  margin-bottom:25px;
+}
+
+.card{
+  background:white;
   border-radius:14px;
   padding:20px;
-  margin-bottom:20px;
-  border:1px solid var(--borde);
+  text-align:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.06);
 }
 
-h2{
-  margin-top:0;
-  color:var(--verde);
+.card span{
+  font-size:32px;
+  font-weight:700;
+  display:block;
+  margin-top:8px;
 }
 
-/* ===== FORM ===== */
-input, select{
-  width:100%;
-  padding:10px;
-  margin-top:6px;
-  margin-bottom:12px;
-  border-radius:8px;
-  border:1px solid var(--borde);
-  font-size:14px;
-}
-
-button.primary{
-  background:var(--verde);
-  color:#fff;
-  border:none;
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-/* ===== GRID ===== */
-.grid{
+/* ===== RODEOS ===== */
+.rodeos{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
   gap:20px;
 }
 
-/* ===== CARDS ===== */
-.card{
-  border:1px solid var(--borde);
-  border-radius:12px;
-  padding:15px;
+.rodeo-card{
+  background:white;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
+}
+
+.rodeo-card h3{
+  margin:0 0 10px 0;
+}
+
+.rodeo-info{
+  font-size:14px;
+  margin-bottom:12px;
+}
+
+.rodeo-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.stat{
+  background:var(--gris);
+  border-radius:10px;
+  padding:10px;
+  text-align:center;
   cursor:pointer;
 }
-.card:hover{
-  background:#f6faf8;
+
+.stat:hover{
+  background:#e0e0e0;
 }
-.small{
-  font-size:13px;
-  color:#666;
+
+.stat b{
+  font-size:20px;
+  display:block;
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
   <!-- MENU -->
-  <div class="menu">
+  <aside class="menu">
     <h1>Ganadero B&M</h1>
-    <button onclick="vista('inicio')">Inicio</button>
-    <button onclick="vista('animales')">Animales</button>
-    <button>Salud</button>
-    <button>Reproducción</button>
-    <button onclick="vista('config')">Configuración</button>
-  </div>
+    <ul>
+      <li class="active">Inicio</li>
+      <li>Animales</li>
+      <li>Salud</li>
+      <li>Reproducción</li>
+      <li>Configuración</li>
+    </ul>
+  </aside>
 
   <!-- CONTENT -->
-  <div class="content">
+  <main class="content">
 
-    <!-- INICIO -->
-    <div id="inicio" class="section">
-      <h2>Inicio</h2>
-
-      <label>Seleccionar rodeo</label>
-      <select id="rodeoSelect" onchange="mostrarResumen()"></select>
-
-      <div class="grid" id="resumen"></div>
+    <!-- DASHBOARD SUPERIOR (NO SE TOCA) -->
+    <div class="dashboard">
+      <div class="card">
+        Rodeos activos
+        <span id="dashRodeos">0</span>
+      </div>
+      <div class="card">
+        Animales total
+        <span id="dashAnimales">0</span>
+      </div>
+      <div class="card">
+        Alertas
+        <span id="dashAlertas">0</span>
+      </div>
     </div>
 
-    <!-- ANIMALES -->
-    <div id="animales" class="section" style="display:none">
-      <h2>Animales del rodeo</h2>
-      <div id="listaAnimales"></div>
-    </div>
+    <!-- RODEOS -->
+    <div class="rodeos" id="rodeosContainer"></div>
 
-    <!-- CONFIG -->
-    <div id="config" class="section" style="display:none">
-      <h2>Configuración</h2>
-
-      <label>Establecimiento</label>
-      <input id="establecimiento">
-
-      <button class="primary" onclick="guardarConfig()">Guardar</button>
-    </div>
-
-  </div>
+  </main>
 </div>
 
 <script>
+/* ===== DATOS BASE (SIMULADOS POR AHORA) ===== */
 let data = JSON.parse(localStorage.getItem("ganaderoBM")) || {
-  establecimiento:"",
-  lotes:["Lote 1","Lote 2"],
   rodeos:[
-    {nombre:"Rodeo A", lote:"Lote 1", animales:[]}
-  ]
+    {nombre:"Rodeo Cría", lote:"Lote 2", vacas:120, toros:4, terneros:38},
+    {nombre:"Rodeo Recría", lote:"Lote 1", vacas:0, toros:0, terneros:85},
+    {nombre:"Rodeo Invernada", lote:"Lote 3", vacas:0, toros:0, terneros:113},
+    {nombre:"Rodeo Vaquillonas", lote:"Lote 4", vacas:34, toros:0, terneros:0}
+  ],
+  alertas:2
 };
 
-function save(){
-  localStorage.setItem("ganaderoBM", JSON.stringify(data));
-}
+function render(){
+  // Dashboard
+  dashRodeos.textContent = data.rodeos.length;
+  dashAnimales.textContent = data.rodeos.reduce((t,r)=>t+r.vacas+r.toros+r.terneros,0);
+  dashAlertas.textContent = data.alertas;
 
-/* ===== VISTAS ===== */
-function vista(id){
-  ["inicio","animales","config"].forEach(v=>{
-    document.getElementById(v).style.display="none";
-  });
-  document.getElementById(id).style.display="block";
-}
-
-/* ===== CONFIG ===== */
-establecimiento.value=data.establecimiento;
-
-function guardarConfig(){
-  data.establecimiento=establecimiento.value;
-  save();
-  alert("Guardado");
-}
-
-/* ===== INICIO ===== */
-function cargarRodeos(){
-  rodeoSelect.innerHTML="";
-  data.rodeos.forEach((r,i)=>{
-    rodeoSelect.innerHTML+=`<option value="${i}">${r.nombre}</option>`;
-  });
-}
-cargarRodeos();
-
-function mostrarResumen(){
-  let r=data.rodeos[rodeoSelect.value];
-  let vacas=r.animales.filter(a=>a.tipo=="Vaca").length;
-  let toros=r.animales.filter(a=>a.tipo=="Toro").length;
-  let terneros=r.animales.filter(a=>a.tipo=="Ternero").length;
-
-  resumen.innerHTML=`
-    <div class="card" onclick="listar('Vaca')">
-      <b>Vacas</b><br>${vacas}
-    </div>
-    <div class="card" onclick="listar('Toro')">
-      <b>Toros</b><br>${toros}
-    </div>
-    <div class="card" onclick="listar('Ternero')">
-      <b>Terneros</b><br>${terneros}
-    </div>
-    <div class="card">
-      <b>Lote</b><br>${r.lote}
-    </div>
-  `;
-}
-mostrarResumen();
-
-/* ===== LISTADO ===== */
-function listar(tipo){
-  vista("animales");
-  let r=data.rodeos[rodeoSelect.value];
-  listaAnimales.innerHTML="";
-  r.animales.filter(a=>a.tipo==tipo).forEach(a=>{
-    listaAnimales.innerHTML+=`
-      <div class="card">
-        <b>${a.caravana}</b><br>
-        ${a.sexo} - ${a.color}
+  // Rodeos
+  rodeosContainer.innerHTML="";
+  data.rodeos.forEach(r=>{
+    rodeosContainer.innerHTML+=`
+      <div class="rodeo-card">
+        <h3>${r.nombre}</h3>
+        <div class="rodeo-info">Lote actual: <b>${r.lote}</b></div>
+        <div class="rodeo-stats">
+          <div class="stat" onclick="detalle('${r.nombre}','vacas')">
+            <b>${r.vacas}</b>Vacas
+          </div>
+          <div class="stat" onclick="detalle('${r.nombre}','toros')">
+            <b>${r.toros}</b>Toros
+          </div>
+          <div class="stat" onclick="detalle('${r.nombre}','terneros')">
+            <b>${r.terneros}</b>Terneros/as
+          </div>
+        </div>
       </div>
     `;
   });
+
+  localStorage.setItem("ganaderoBM",JSON.stringify(data));
 }
+
+function detalle(rodeo,tipo){
+  alert("Abrir listado de "+tipo+" del "+rodeo);
+  // Acá después va:
+  // - listado
+  // - ficha individual
+}
+
+render();
 </script>
 
 </body>
