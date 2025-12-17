@@ -230,3 +230,45 @@ document.addEventListener('DOMContentLoaded',render);
 - El foco es **configurar**, no operar.
 - Esta estructura queda fija hasta nuevo aviso.
 
+---
+
+## Submenú – **Configuración** (MENÚ IZQUIERDO)
+
+```
+Configuración
+ ├─ Datos del establecimiento
+ │   ├─ Nombre del campo
+ │   ├─ Propietario
+ │   └─ Ubicación
+ │
+ ├─ Rodeos y lotes
+ │   ├─ Alta de rodeo
+ │   ├─ Edición / baja
+ │   └─ Asignación a lotes
+ │
+ ├─ Categorías de animales
+ │   ├─ Vacas
+ │   ├─ Toros
+ │   ├─ Terneros/as
+ │   └─ Vaquillonas
+ │
+ ├─ Dispositivos
+ │   ├─ Lector RFID
+ │   ├─ Balanza
+ │   └─ Sincronización
+ │
+ ├─ Usuarios y permisos
+ │   ├─ Administrador
+ │   └─ Operador
+ │
+ └─ Sistema
+     ├─ Copia de seguridad
+     ├─ Restaurar datos
+     └─ Reset de aplicación
+```
+
+### Regla del submenú
+- Al hacer click en **cualquier subítem**:
+  - Se mantiene el **DASHBOARD GENERAL** visible.
+  - Se muestra **solo** la opción seleccionada.
+  - No aparecen rodeos ni listados operativos.
