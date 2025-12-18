@@ -23,17 +23,12 @@ body{
   grid-template-columns:260px 1fr;
   height:100vh;
 }
-/* ===== MENU ===== */
 .menu{
   background:#fff;
   border-right:1px solid var(--borde);
   padding:20px;
 }
-.menu h1{
-  font-size:20px;
-  margin:0 0 20px 0;
-  color:var(--verde);
-}
+.menu h1{font-size:20px;margin:0 0 20px 0;color:var(--verde)}
 .menu ul{list-style:none;padding:0;margin:0}
 .menu li{
   padding:10px;
@@ -41,17 +36,9 @@ body{
   margin-bottom:4px;
   cursor:pointer;
 }
-.menu li.active{
-  background:var(--verde);
-  color:#fff;
-  font-weight:600;
-}
+.menu li.active{background:var(--verde);color:#fff;font-weight:600}
 .menu li:hover{background:var(--gris)}
-.submenu{margin-left:10px;margin-top:4px}
-.submenu li{font-size:14px}
-/* ===== CONTENT ===== */
 .content{padding:25px;overflow:auto}
-/* ===== DASHBOARD GENERAL ===== */
 .dashboard-general{
   background:#fff;
   border-radius:18px;
@@ -64,154 +51,117 @@ body{
 }
 .dg-item{text-align:center}
 .dg-item span{display:block;font-size:34px;font-weight:700;margin-top:6px}
-/* ===== RODEOS ===== */
-.rodeos{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:22px;
-}
-.rodeo-card{
-  background:#fff;
-  border-radius:18px;
-  padding:18px;
-  box-shadow:0 6px 16px rgba(0,0,0,.08);
-}
-.rodeo-card h3{margin:0 0 10px 0}
-.rodeo-info{font-size:14px;margin-bottom:14px}
-.rodeo-stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-.stat{
-  background:var(--gris);
-  border-radius:12px;
-  padding:12px;
-  text-align:center;
-  cursor:pointer;
-}
-.stat b{display:block;font-size:20px}
-/* ===== CONFIG ===== */
 .config-box{
   background:#fff;
   border-radius:18px;
   padding:20px;
   box-shadow:0 6px 16px rgba(0,0,0,.08);
 }
-@media(max-width:900px){
-  .app{grid-template-columns:1fr}
-  .menu{display:none}
-  .dashboard-general{grid-template-columns:1fr}
-  .rodeos{grid-template-columns:1fr}
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
 }
+.table th,.table td{
+  padding:10px;
+  border-bottom:1px solid var(--borde);
+  text-align:left;
+}
+.table th{background:var(--gris)}
+.filters span{
+  margin-right:12px;
+  cursor:pointer;
+  font-weight:600;
+}
+.filters span.active{color:var(--verde)}
 </style>
 </head>
 <body>
+
 <div class="app">
-  <aside class="menu">
-    <h1>Ganadero B&M</h1>
-    <ul>
-      <li class="active" onclick="mostrarInicio(this)">Inicio</li>
-      <li onclick="mostrarSimple(this)">Animales</li>
-      <li onclick="mostrarSimple(this)">Salud</li>
-      <li onclick="mostrarSimple(this)">Reproducción</li>
-      <li onclick="mostrarConfig(this)">Configuración</li>
-      <ul class="submenu" id="configSub" style="display:none">
-        <li>Datos del establecimiento</li>
-        <li>Rodeos y lotes</li>
-        <li>Categorías de animales</li>
-        <li>Dispositivos</li>
-        <li>Usuarios y permisos</li>
-        <li>Sistema</li>
-      </ul>
-    </ul>
-  </aside>
+<aside class="menu">
+<h1>Ganadero B&M</h1>
+<ul>
+<li class="active" onclick="showView('inicio',this)">Inicio</li>
+<li onclick="showView('animales',this)">Animales</li>
+</ul>
+</aside>
 
-  <main class="content">
+<main class="content">
 
-    <!-- DASHBOARD GENERAL (SIEMPRE VISIBLE) -->
-    <div class="dashboard-general">
-      <div class="dg-item">Rodeos activos<span id="dgRodeos">0</span></div>
-      <div class="dg-item">Animales totales<span id="dgAnimales">0</span></div>
-      <div class="dg-item">Alertas<span id="dgAlertas">0</span></div>
-    </div>
-
-    <!-- INICIO -->
-    <section id="inicioView">
-      <div class="rodeos" id="rodeos"></div>
-    </section>
-
-    <!-- CONFIGURACION -->
-    <section id="configView" style="display:none">
-      <div class="config-box">
-        <h3>Configuración</h3>
-        <p>Seleccione una opción del submenú izquierdo.</p>
-      </div>
-    </section>
-
-  </main>
+<div class="dashboard-general">
+<div class="dg-item">Animales totales<span id="dgAnimales">0</span></div>
 </div>
+
+<section id="inicioView">
+<div class="config-box">
+<h3>Inicio</h3>
+<p>Resumen general del establecimiento.</p>
+</div>
+</section>
+
+<section id="animalesView" style="display:none"></section>
+
+</main>
+</div>
+
 <script>
-const data = {
-  rodeos:[
-    {nombre:'Rodeo Cría',lote:'Lote 2',vacas:120,toros:4,terneros:38},
-    {nombre:'Rodeo Recría',lote:'Lote 1',vacas:0,toros:0,terneros:85},
-    {nombre:'Rodeo Invernada',lote:'Lote 3',vacas:0,toros:0,terneros:113},
-    {nombre:'Rodeo Vaquillonas',lote:'Lote 4',vacas:34,toros:0,terneros:0}
-  ],
-  alertas:2
-};
+const animalesDB=[
+{caravana:101,cat:'Vaca',origen:'Nacido',color:'Negra',rodeo:'Cría',obs:'Preñada'},
+{caravana:102,cat:'Vaca',origen:'Comprado',color:'Colorada',rodeo:'Cría',obs:''},
+{caravana:210,cat:'Vaquillona',origen:'Nacido',color:'Negra',rodeo:'Vaquillonas',obs:'Para servicio'},
+{caravana:12,cat:'Toro',origen:'Comprado',color:'Negro',rodeo:'Cría',obs:'Repaso'},
+{caravana:501,cat:'Ternero',origen:'Nacido',color:'Overo',rodeo:'Cría',obs:'Pie madre'},
+{caravana:502,cat:'Ternera',origen:'Nacido',color:'Negra',rodeo:'Cría',obs:''}
+];
 
-function limpiarMenu(){
-  document.querySelectorAll('.menu > ul > li').forEach(li=>li.classList.remove('active'));
+function showView(v,el){
+document.querySelectorAll('.menu li').forEach(l=>l.classList.remove('active'));
+el.classList.add('active');
+inicioView.style.display='none';
+animalesView.style.display='none';
+document.getElementById(v+'View').style.display='block';
 }
 
-function mostrarInicio(el){
-  limpiarMenu();
-  el.classList.add('active');
-  inicioView.style.display='block';
-  configView.style.display='none';
-  configSub.style.display='none';
+function renderAnimales(cat='Todos'){
+const filtros=['Todos','Vaca','Vaquillona','Toro','Ternera','Ternero'];
+animalesView.innerHTML=`
+<div class="config-box">
+<div class="filters">
+${filtros.map(f=>`<span class="${cat===f?'active':''}" onclick="renderAnimales('${f}')">${f}s</span>`).join('')}
+</div>
+<table class="table">
+<thead>
+<tr>
+<th>Caravana</th>
+<th>Origen</th>
+<th>Color</th>
+<th>Rodeo</th>
+<th>Comentarios</th>
+</tr>
+</thead>
+<tbody>
+${animalesDB
+.filter(a=>cat==='Todos'||a.cat===cat)
+.sort((a,b)=>a.caravana-b.caravana)
+.map(a=>`
+<tr>
+<td>${a.caravana}</td>
+<td>${a.origen}</td>
+<td>${a.color}</td>
+<td>${a.rodeo}</td>
+<td>${a.obs}</td>
+</tr>`).join('')}
+</tbody>
+</table>
+</div>`;
 }
 
-function mostrarConfig(el){
-  limpiarMenu();
-  el.classList.add('active');
-  inicioView.style.display='none';
-  configView.style.display='block';
-  configSub.style.display='block';
-}
-
-function mostrarSimple(el){
-  limpiarMenu();
-  el.classList.add('active');
-  inicioView.style.display='none';
-  configView.style.display='none';
-  configSub.style.display='none';
-}
-
-function render(){
-  dgRodeos.textContent = data.rodeos.length;
-  dgAnimales.textContent = data.rodeos.reduce((t,r)=>t+r.vacas+r.toros+r.terneros,0);
-  dgAlertas.textContent = data.alertas;
-
-  rodeos.innerHTML='';
-  data.rodeos.forEach(r=>{
-    rodeos.insertAdjacentHTML('beforeend',`
-      <div class="rodeo-card">
-        <h3>${r.nombre}</h3>
-        <div class="rodeo-info">Lote: <b>${r.lote}</b></div>
-        <div class="rodeo-stats">
-          <div class="stat"><b>${r.vacas}</b>Vacas</div>
-          <div class="stat"><b>${r.toros}</b>Toros</div>
-          <div class="stat"><b>${r.terneros}</b>Terneros</div>
-        </div>
-      </div>
-    `);
-  });
-}
-
-document.addEventListener('DOMContentLoaded',render);
+document.addEventListener('DOMContentLoaded',()=>{
+dgAnimales.textContent=animalesDB.length;
+renderAnimales();
+});
 </script>
+
 </body>
 </html>
