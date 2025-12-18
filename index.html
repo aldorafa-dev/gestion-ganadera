@@ -53,6 +53,18 @@ body{
 }
 .dg-item{text-align:center}
 .dg-item span{display:block;font-size:34px;font-weight:700;margin-top:6px}
+.rodeos{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.rodeo-card{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
+}
+.rodeo-card h3{margin:0 0 10px 0}
+.rodeo-info{font-size:14px;margin-bottom:14px}
+.rodeo-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--gris);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-size:20px}
 .config-box{
   background:#fff;
   border-radius:18px;
@@ -80,13 +92,13 @@ body{
   .app{grid-template-columns:1fr}
   .menu{display:none}
   .dashboard-general{grid-template-columns:1fr}
+  .rodeos{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
 <div class="app">
-
 <aside class="menu">
 <h1>Ganadero B&M</h1>
 <ul>
@@ -111,10 +123,14 @@ body{
 <div class="dashboard-general">
 <div class="dg-item">Rodeos activos<span id="dgRodeos">0</span></div>
 <div class="dg-item">Animales totales<span id="dgAnimales">0</span></div>
-<div class="dg-item">Alertas<span id="dgAlertas">0</span></div>
+<div class="dg-item">Alertas sanitarias<span id="dgAlertas">0</span></div>
 </div>
 
-<section id="inicioView"></section>
+<!-- INICIO (BASE ORIGINAL) -->
+<section id="inicioView">
+<div class="rodeos" id="rodeos"></div>
+</section>
+
 <section id="animalesView" style="display:none"></section>
 <section id="saludView" style="display:none"></section>
 <section id="reproduccionView" style="display:none"></section>
@@ -126,27 +142,30 @@ body{
 </div>
 
 <script>
-/* ===== REFERENCIAS DOM (CLAVE PARA GITHUB) ===== */
-const dgRodeos = document.getElementById('dgRodeos');
-const dgAnimales = document.getElementById('dgAnimales');
-const dgAlertas = document.getElementById('dgAlertas');
+/* ===== REFERENCIAS DOM ===== */
+const dgRodeos=document.getElementById('dgRodeos');
+const dgAnimales=document.getElementById('dgAnimales');
+const dgAlertas=document.getElementById('dgAlertas');
+const inicioView=document.getElementById('inicioView');
+const animalesView=document.getElementById('animalesView');
+const saludView=document.getElementById('saludView');
+const reproduccionView=document.getElementById('reproduccionView');
+const configView=document.getElementById('configView');
+const configSub=document.getElementById('configSub');
+const rodeosDiv=document.getElementById('rodeos');
 
-const inicioView = document.getElementById('inicioView');
-const animalesView = document.getElementById('animalesView');
-const saludView = document.getElementById('saludView');
-const reproduccionView = document.getElementById('reproduccionView');
-const configView = document.getElementById('configView');
-const configSub = document.getElementById('configSub');
-
-/* ===== DATA ===== */
+/* ===== BASE DATA ===== */
 const db={
 rodeos:[
-{nombre:'Cría'},
-{nombre:'Recría'}
+{nombre:'Cría',lote:'L2',vacas:120,toros:4,terneros:38},
+{nombre:'Recría',lote:'L1',vacas:0,toros:0,terneros:85},
+{nombre:'Invernada',lote:'L3',vacas:0,toros:0,terneros:113},
+{nombre:'Vaquillonas',lote:'L4',vacas:34,toros:0,terneros:0}
 ],
 alertas:[]
 };
 
+/* ===== ANIMALES ===== */
 const animalesDB=[
 {caravana:12,categoria:'Toro',origen:'Comprado',color:'Negro',rodeo:'Cría',obs:'Repaso'},
 {caravana:101,categoria:'Vaca',origen:'Nacido',color:'Negra',rodeo:'Cría',obs:'Preñada'},
@@ -169,18 +188,33 @@ cleanMenu();
 el.classList.add('active');
 hideViews();
 document.getElementById(v+'View').style.display='block';
-configSub.style.display = v==='config' ? 'block' : 'none';
+configSub.style.display=v==='config'?'block':'none';
 if(v==='animales') renderAnimales();
 }
 
-/* ===== DASHBOARD ===== */
+/* ===== RENDER BASE ===== */
 function renderDashboard(){
-dgRodeos.textContent = db.rodeos.length;
-dgAnimales.textContent = animalesDB.length;
-dgAlertas.textContent = db.alertas.length;
+dgRodeos.textContent=db.rodeos.length;
+dgAnimales.textContent=animalesDB.length;
+dgAlertas.textContent=db.alertas.length;
+}
+function renderInicio(){
+rodeosDiv.innerHTML='';
+db.rodeos.forEach(r=>{
+rodeosDiv.insertAdjacentHTML('beforeend',`
+<div class="rodeo-card">
+<h3>${r.nombre}</h3>
+<div class="rodeo-info">Lote <b>${r.lote}</b></div>
+<div class="rodeo-stats">
+<div class="stat"><b>${r.vacas}</b>Vacas</div>
+<div class="stat"><b>${r.toros}</b>Toros</div>
+<div class="stat"><b>${r.terneros}</b>Terneros</div>
+</div>
+</div>`);
+});
 }
 
-/* ===== ANIMALES ===== */
+/* ===== ANIMALES VIEW ===== */
 function renderAnimales(cat='Todos'){
 const cats=['Todos','Vaca','Vaquillona','Toro','Ternera','Ternero'];
 animalesView.innerHTML=`
@@ -218,8 +252,7 @@ ${animalesDB
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
 renderDashboard();
-inicioView.innerHTML =
-'<div class="config-box"><h3>Inicio</h3><p>Resumen general del establecimiento.</p></div>';
+renderInicio();
 });
 </script>
 
