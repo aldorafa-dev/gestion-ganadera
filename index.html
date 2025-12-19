@@ -102,12 +102,22 @@ body{
 <aside class="menu">
 <h1>Ganadero B&M</h1>
 <ul>
-<li class="active" onclick="showView('inicio',this)">Inicio</li>
-<li onclick="showView('animales',this)">Animales</li>
-<li onclick="showView('salud',this)">Salud</li>
-<li onclick="showView('reproduccion',this)">Reproducción</li>
-<li onclick="showView('config',this)">Configuración</li>
-<ul class="submenu" id="configSub" style="display:none">
+<li class="active">Inicio</li>
+<li>Animales</li>
+
+<!-- ALTAS (SOLO VISUAL) -->
+<li>Altas</li>
+<ul class="submenu">
+  <li>Alta de animales</li>
+  <li>Alta por lote</li>
+  <li>Alta por compra</li>
+  <li>Alta por nacimiento</li>
+</ul>
+
+<li>Salud</li>
+<li>Reproducción</li>
+<li>Configuración</li>
+<ul class="submenu">
 <li>Datos del establecimiento</li>
 <li>Rodeos y lotes</li>
 <li>Categorías de animales</li>
@@ -126,7 +136,6 @@ body{
 <div class="dg-item">Alertas sanitarias<span id="dgAlertas">0</span></div>
 </div>
 
-<!-- INICIO (BASE ORIGINAL) -->
 <section id="inicioView">
 <div class="rodeos" id="rodeos"></div>
 </section>
@@ -140,121 +149,5 @@ body{
 
 </main>
 </div>
-
-<script>
-/* ===== REFERENCIAS DOM ===== */
-const dgRodeos=document.getElementById('dgRodeos');
-const dgAnimales=document.getElementById('dgAnimales');
-const dgAlertas=document.getElementById('dgAlertas');
-const inicioView=document.getElementById('inicioView');
-const animalesView=document.getElementById('animalesView');
-const saludView=document.getElementById('saludView');
-const reproduccionView=document.getElementById('reproduccionView');
-const configView=document.getElementById('configView');
-const configSub=document.getElementById('configSub');
-const rodeosDiv=document.getElementById('rodeos');
-
-/* ===== BASE DATA ===== */
-const db={
-rodeos:[
-{nombre:'Cría',lote:'L2',vacas:120,toros:4,terneros:38},
-{nombre:'Recría',lote:'L1',vacas:0,toros:0,terneros:85},
-{nombre:'Invernada',lote:'L3',vacas:0,toros:0,terneros:113},
-{nombre:'Vaquillonas',lote:'L4',vacas:34,toros:0,terneros:0}
-],
-alertas:[]
-};
-
-/* ===== ANIMALES ===== */
-const animalesDB=[
-{caravana:12,categoria:'Toro',origen:'Comprado',color:'Negro',rodeo:'Cría',obs:'Repaso'},
-{caravana:101,categoria:'Vaca',origen:'Nacido',color:'Negra',rodeo:'Cría',obs:'Preñada'},
-{caravana:102,categoria:'Vaca',origen:'Comprado',color:'Colorada',rodeo:'Cría',obs:''},
-{caravana:210,categoria:'Vaquillona',origen:'Nacido',color:'Negra',rodeo:'Vaquillonas',obs:'Para servicio'},
-{caravana:501,categoria:'Ternero',origen:'Nacido',color:'Overo',rodeo:'Cría',obs:'Pie madre'},
-{caravana:502,categoria:'Ternera',origen:'Nacido',color:'Negra',rodeo:'Cría',obs:''}
-];
-
-/* ===== NAVEGACIÓN ===== */
-function cleanMenu(){
-document.querySelectorAll('.menu>ul>li').forEach(l=>l.classList.remove('active'));
-}
-function hideViews(){
-[inicioView,animalesView,saludView,reproduccionView,configView]
-.forEach(v=>v.style.display='none');
-}
-function showView(v,el){
-cleanMenu();
-el.classList.add('active');
-hideViews();
-document.getElementById(v+'View').style.display='block';
-configSub.style.display=v==='config'?'block':'none';
-if(v==='animales') renderAnimales();
-}
-
-/* ===== RENDER BASE ===== */
-function renderDashboard(){
-dgRodeos.textContent=db.rodeos.length;
-dgAnimales.textContent=animalesDB.length;
-dgAlertas.textContent=db.alertas.length;
-}
-function renderInicio(){
-rodeosDiv.innerHTML='';
-db.rodeos.forEach(r=>{
-rodeosDiv.insertAdjacentHTML('beforeend',`
-<div class="rodeo-card">
-<h3>${r.nombre}</h3>
-<div class="rodeo-info">Lote <b>${r.lote}</b></div>
-<div class="rodeo-stats">
-<div class="stat"><b>${r.vacas}</b>Vacas</div>
-<div class="stat"><b>${r.toros}</b>Toros</div>
-<div class="stat"><b>${r.terneros}</b>Terneros</div>
-</div>
-</div>`);
-});
-}
-
-/* ===== ANIMALES VIEW ===== */
-function renderAnimales(cat='Todos'){
-const cats=['Todos','Vaca','Vaquillona','Toro','Ternera','Ternero'];
-animalesView.innerHTML=`
-<div class="config-box">
-<div class="filters">
-${cats.map(c=>`<span class="${cat===c?'active':''}" onclick="renderAnimales('${c}')">${c}s</span>`).join('')}
-</div>
-<table class="table">
-<thead>
-<tr>
-<th>Caravana</th>
-<th>Origen</th>
-<th>Color</th>
-<th>Rodeo</th>
-<th>Comentarios</th>
-</tr>
-</thead>
-<tbody>
-${animalesDB
-.filter(a=>cat==='Todos'||a.categoria===cat)
-.sort((a,b)=>a.caravana-b.caravana)
-.map(a=>`
-<tr>
-<td>${a.caravana}</td>
-<td>${a.origen}</td>
-<td>${a.color}</td>
-<td>${a.rodeo}</td>
-<td>${a.obs}</td>
-</tr>`).join('')}
-</tbody>
-</table>
-</div>`;
-}
-
-/* ===== INIT ===== */
-document.addEventListener('DOMContentLoaded',()=>{
-renderDashboard();
-renderInicio();
-});
-</script>
-
 </body>
 </html>
